@@ -1,0 +1,35 @@
+# --- Dossier: sensitive investigation data never gets committed ---
+# Real case files, exports, and any raw collected data are PII by nature.
+# These directories are created at runtime and stay local only.
+cases/
+exports/
+
+# Environment / secrets
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+.venv
+venv/
+env/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

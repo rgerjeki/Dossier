@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dossier"
+version = "0.1.0"
+description = "An offline OSINT investigation workbench: collect, curate, and export a cited report."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "Reese Gerjekian" }]
+keywords = ["osint", "investigation", "reporting", "due-diligence"]
+
+# Core stays deliberately light. The engine (models, case, findings) is pure
+# stdlib so it can be imported and tested without Qt or any collector installed.
+# httpx is here because the built-in collectors (Gravatar, search-kit) need it.
+dependencies = [
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+# The desktop shell. Kept optional so the engine tests never pull in Qt.
+ui = ["PySide6>=6.6"]
+# Wrapped third-party collectors. Optional so a broken upstream tool never
+# blocks installing or testing the engine.
+collectors = ["maigret", "holehe", "PyExifTool>=0.5"]
+# Word .docx export (HTML-to-docx from the edited document). Qt handles the
+# preview and PDF natively (no dep).
+report = ["htmldocx>=0.0.6"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+dossier = "dossier.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dossier"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Make the suite importable straight from the source tree, independent of whether
+# the editable install's path hook is healthy.
+pythonpath = ["src"]
+# Guardrail from the brief: tests mock collectors, they never hit the network.
+addopts = "-ra"
