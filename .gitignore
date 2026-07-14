@@ -4,6 +4,10 @@
 cases/
 exports/
 
+# Internal working notes (project brief, author/tone notes, decision log,
+# portfolio strategy). Local only, not part of the public repo.
+NOTES.md
+
 # Environment / secrets
 .env
 .env.*

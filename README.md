@@ -17,41 +17,37 @@ The mental model is "a Word template that also does data collection." Collection
 feeds the workbench, the human curates, and the report writes itself from what
 was kept.
 
-## Honest scope (what this is and is not)
+## Where Dossier fits
 
-Being clear-eyed about this shapes every decision:
+Dossier is built around one idea: for a solo investigator, the hard part is not
+running a scanner, it is turning the results into a formatted, cited report you
+can stand behind.
 
-- The collection half adds little to the world. Sherlock, Maigret, holehe,
-  SpiderFoot, and Maltego already collect better than anything built here.
-  Dossier **reuses** those, it does not reinvent them.
-- The report half targets a real, widely-disliked pain: turning findings into a
-  formatted, cited document and tracking where every fact came from. Tooling for
-  the individual investigator (not the enterprise suite) is genuinely thin here.
-  That is the original contribution.
-- Realistic audience: students, small shops, journalists, CTF players (for
-  example TraceLabs), and personal use. Seasoned pros with Maltego will not
-  switch, and that is fine.
-- The point is proving the whole investigative lifecycle (collect, curate,
-  analyze, write, cite), not just running someone else's scanner.
+- **It reuses best-in-class collectors** (Maigret, holehe, and friends) instead of
+  reinventing them, and puts its own effort into the piece that is genuinely thin
+  for the individual investigator: findings flow into a due-diligence report with
+  every fact tracked back to its source and ready to export.
+- **It covers the whole lifecycle in one offline app:** collect, curate, analyze,
+  write, and cite, without shuttling data between five separate tools.
+- **Built for the individual investigator:** students, small shops, journalists,
+  CTF and TraceLabs players, and personal research, where a lightweight,
+  end-to-end, offline workbench is more useful than an enterprise suite.
 
-## What works from a desktop, and what does not
+## What it collects (and what it deliberately does not)
 
-Dossier will not lie about what it can do:
+Clear boundaries are a feature here, because honest provenance is the whole point:
 
-- **Works right now** (public, no-login endpoints): username-existence checks,
-  email account-existence, file and photo metadata, Gravatar, and search-link
-  generation. These return real data.
-- **Does not work and is not faked:** anything behind a login or anti-bot wall
-  (Instagram, Facebook, LinkedIn, X, most people-search and public-records
-  sites). Scraping these is fragile, breaks constantly, and usually violates
-  their terms.
-- **The design rule:** automate the clean public stuff, and for everything behind
-  a wall, generate guided pivot links the investigator opens and reviews by hand.
-  This is how professional OSINT actually works, and it keeps the tool legal.
-- Rate limits and IP blocks are real. Collectors run politely (timeouts, delays)
-  and report "could not reach" honestly rather than pretending. A collector that
-  is blocked, rate limited, or unreachable is shown as such, never dropped
-  silently.
+- **Automated, real data** from public, no-login sources: username presence, email
+  account-existence, file and photo metadata, Gravatar, SEC EDGAR filings,
+  CourtListener records, and search-link generation.
+- **Guided, not scraped, for walled sources.** For anything behind a login or
+  anti-bot wall (Instagram, LinkedIn, X, most people-search and public-records
+  sites), Dossier generates precise pivot links you open and review by hand,
+  rather than fragile scrapers that break constantly and violate terms. This is
+  how professional OSINT actually works, and it keeps the tool stable and legal.
+- **Nothing is faked.** A collector that is blocked, rate limited, or unreachable
+  is reported as exactly that, never dropped silently or invented. Collectors run
+  politely (timeouts and delays) and each finding carries an honest status.
 
 ## Responsible use
 
@@ -107,9 +103,7 @@ The full v1 loop works: collect, curate, report.
   and edit anywhere, drag images to resize), and your edits drive both exports:
   PDF (exact, via Chromium) and Word `.docx`.
 
-See [`examples/`](examples/) for a sanitized sample case and its exported report,
-and [`NOTES.md`](NOTES.md) for the full brief, the decision log, and the build
-order.
+See [`examples/`](examples/) for a sanitized sample case and its exported report.
 
 ## Download (macOS)
 
@@ -169,13 +163,16 @@ The metadata collector also needs the `exiftool` binary on your PATH
 (`brew install exiftool` on macOS). Everything else runs against public endpoints
 or locally, with no API keys.
 
+To work on the engine alone (no Qt), `pip install -e ".[dev]"` pulls in just the
+test tooling, and `pytest` runs the full suite headless.
+
 ## Architecture (short version)
 
 The engine and the UI are separated on purpose. The collectors, the `Finding`
 data model, and the report renderer are built and tested with no Qt imported.
 The PySide6 desktop app is a thin shell over that engine.
 
-Key recorded decisions (full context in [`NOTES.md`](NOTES.md)):
+Key recorded decisions:
 
 - **Desktop UI:** PySide6 (Qt).
 - **Username collector:** Maigret (library-usable, structured JSON, exposes
@@ -190,17 +187,6 @@ Key recorded decisions (full context in [`NOTES.md`](NOTES.md)):
   `docxtpl` plus Qt's `QTextDocument` / `QPdfWriter`, but `QTextDocument` renders
   only Qt's rich-text HTML subset and drifted the formatting on save/reopen, so
   the editor was rebuilt on QtWebEngine.
-
-## Install (development)
-
-```bash
-python3.13 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"          # engine + test tooling
-# optional extras, added as the matching features land:
-#   pip install -e ".[ui]"          PySide6 desktop shell
-#   pip install -e ".[collectors]"  Maigret, holehe, ExifTool binding
-#   pip install -e ".[report]"      htmldocx for Word .docx export
-```
 
 ## License
 
